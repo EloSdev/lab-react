@@ -1,10 +1,10 @@
 import { useForm } from "@tanstack/react-form";
-import { saveCoffee } from "./api";
-import { coffeeSchema } from "./coffee.schema";
-import type { Coffee, CoffeeInput } from "./model";
+import { coffeeSchema } from "../../core/coffees/coffee.schema";
+import type { CoffeeInput } from "../../core/coffees/model";
 
 interface CoffeeFormProps {
-  onSaved: (coffee: Coffee) => void;
+  initialValues?: CoffeeInput;
+  onSubmit: (input: CoffeeInput) => Promise<void>;
 }
 
 const emptyCoffee: CoffeeInput = {
@@ -35,14 +35,13 @@ function FieldError({ id, message }: { id: string; message?: string }) {
   );
 }
 
-export function CoffeeForm({ onSaved }: CoffeeFormProps) {
+export function CoffeeForm({ initialValues, onSubmit }: CoffeeFormProps) {
   const form = useForm({
-    defaultValues: emptyCoffee,
+    defaultValues: initialValues ?? emptyCoffee,
     validators: { onChange: coffeeSchema, onSubmit: coffeeSchema },
     onSubmit: async ({ value }) => {
-      // parse devuelve los valores ya limpios (con trim aplicado).
-      const saved = await saveCoffee(coffeeSchema.parse(value));
-      onSaved(saved);
+      // parse devuelve los valores ya limpios (con trim aplicado y sin campos de más, como el id).
+      await onSubmit(coffeeSchema.parse(value));
     },
   });
 

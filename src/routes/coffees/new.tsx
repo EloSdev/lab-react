@@ -1,24 +1,6 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { CoffeeForm } from "../../coffee-form";
+import { createFileRoute } from "@tanstack/react-router";
+import { NewCoffeeScene } from "../../scenes/new-coffee.scene";
 
 export const Route = createFileRoute("/coffees/new")({
-  component: NewCoffeePage,
+  component: NewCoffeeScene,
 });
-
-function NewCoffeePage() {
-  const navigate = useNavigate();
-
-  return (
-    <div className="space-y-5">
-      <h1>Añadir café</h1>
-      <CoffeeForm
-        onSaved={(coffee) =>
-          navigate({
-            to: "/coffees/$coffeeId",
-            params: { coffeeId: String(coffee.id) },
-          })
-        }
-      />
-    </div>
-  );
-}
