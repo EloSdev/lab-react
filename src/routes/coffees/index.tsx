@@ -1,9 +1,14 @@
+import { createFileRoute } from "@tanstack/react-router";
 import { useRef, useState } from "react";
-import { CoffeeCard } from "./coffee-card";
-import type { Coffee } from "./model";
-import { useCoffees } from "./use-coffees";
+import { CoffeeCard } from "../../coffee-card";
+import type { Coffee } from "../../model";
+import { useCoffees } from "../../use-coffees";
 
-export function App() {
+export const Route = createFileRoute("/coffees/")({
+  component: CatalogPage,
+});
+
+function CatalogPage() {
   const { coffees, loading, error } = useCoffees();
   const [cart, setCart] = useState<Coffee[]>([]);
   const [search, setSearch] = useState("");
@@ -20,9 +25,9 @@ export function App() {
   }
 
   return (
-    <main>
+    <div className="space-y-5">
       <header className="flex items-center justify-between gap-4">
-        <h1>Tueste · Catálogo de cafés</h1>
+        <h1>Catálogo de cafés</h1>
         <button onClick={() => searchInputRef.current?.focus()}>Buscar</button>
       </header>
 
@@ -68,6 +73,6 @@ export function App() {
           )}
         </>
       )}
-    </main>
+    </div>
   );
 }
