@@ -1,41 +1,13 @@
-import { useEffect, useState } from "react";
+import { useRef, useState } from "react";
 import { CoffeeCard } from "./coffee-card";
 import type { Coffee } from "./model";
+import { useCoffees } from "./use-coffees";
 
 export function App() {
-  const [coffees, setCoffees] = useState<Coffee[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { coffees, loading, error } = useCoffees();
   const [cart, setCart] = useState<Coffee[]>([]);
   const [search, setSearch] = useState("");
-
-  useEffect(() => {
-    const controller = new AbortController();
-
-    async function loadCoffees() {
-      try {
-        const response = await fetch("/coffees.json", {
-          signal: controller.signal,
-        });
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}`);
-        }
-        const data: Coffee[] = await response.json();
-        setCoffees(data);
-      } catch {
-        if (!controller.signal.aborted) {
-          setError("No se han podido cargar los cafés.");
-        }
-      } finally {
-        if (!controller.signal.aborted) {
-          setLoading(false);
-        }
-      }
-    }
-
-    loadCoffees();
-    return () => controller.abort();
-  }, []);
+  const searchInputRef = useRef<HTMLInputElement>(null);
 
   const bags = cart.length;
   const total = cart.reduce((sum, coffee) => sum + coffee.price, 0);
@@ -49,7 +21,10 @@ export function App() {
 
   return (
     <main>
-      <h1>Tueste · Catálogo de cafés</h1>
+      <header className="flex items-center justify-between gap-4">
+        <h1>Tueste · Catálogo de cafés</h1>
+        <button onClick={() => searchInputRef.current?.focus()}>Buscar</button>
+      </header>
 
       <section className="flex items-center justify-between gap-4 rounded-lg bg-white p-4 shadow-sm">
         <p aria-live="polite">
@@ -63,6 +38,7 @@ export function App() {
       <div className="flex flex-col gap-1">
         <label htmlFor="search">Buscar por nombre</label>
         <input
+          ref={searchInputRef}
           id="search"
           type="search"
           value={search}
